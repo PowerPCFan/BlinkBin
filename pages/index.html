@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    {{head}}
+
+    <title>BlinkBin</title>
+    <style>
+      .wrap {
+        max-width: 1024px;
+        padding-inline: 1rem;
+        padding-block: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-inline: auto;
+      }
+
+      .hero {
+        background: var(--card);
+        border-radius: 1rem;
+        padding: 1.4rem;
+      }
+
+      h1 {
+        margin-bottom: 0.4rem;
+      }
+
+      p {
+        line-height: 1.6;
+      }
+
+      li {
+        line-height: 1.3;
+        margin-block: 0.5rem;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .card pre {
+        margin-top: 0.2rem;
+      }
+      .card pre code {
+        scrollbar-color: var(--base03) rgba(0,0,0,0);
+        scrollbar-width: thin;
+      }
+
+      ol, ul {
+        margin: 0;
+        padding-left: 1.15rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    {{header}}
+    <main class="wrap">
+      <div class="hero">
+        <h1>BlinkBin</h1>
+        <p class="muted">
+          A simple pastebin service with an open API designed to be simple and accessible for all developers. Create, retrieve, edit, and delete pastes without authentication, protected by rate limiting, proof-of-work, and temporary tokens.
+        </p>
+      </div>
+      <div class="hero">
+        <h3>Rate Limits/Protections Overview</h3>
+        <ul>
+          <li>Challenges: Proof-of-work challenge required for uploading pastes; difficulty ramps up if spam or multiple uploads in a short timeframe are detected. Challenges are limited to <code>15 issuances/minute</code> and a max of <code>10</code> unused, non-expired challenges per IP.</li>
+          <li>Creating pastes: <code>5/min per IP</code> and adaptive PoW difficulty based on multiple factors</li>
+          <li>Read endpoints: <code>120/min per IP</code>, with a stricter limit at <code>25/min per IP</code> for repeated 404s</li>
+          <li>Editing pastes: <code>3/min per edit token</code></li>
+          <li>Deleting pastes: <code>30/min per IP</code> plus a valid edit token to verify ownership</li>
+          <li>Edit/delete fails due to invalid token: <code>10/min per IP</code></li>
+          <li>Unknown paths: <code>45/min per IP</code></li>
+        </ul>
+        <p class="muted">
+          Rate limits are tracked in a SQLite database, persisting across restarts and synced across workers.
+        </p>
+      </div>
+      <div id="usage" class="grid">
+        <div class="card">
+          <h3>Uploading Pastes</h3>
+          <ol>
+            <li>Get a proof-of-work challenge: <code>GET /api/challenge</code></li>
+            <li>Solve it locally by finding the nonce</li>
+            <li>Create the paste: <code>POST /api/paste</code></li>
+            <li>Save <code>paste_hash</code> and <code>edit_token</code> somewhere safe so you can edit/delete/view your paste later.</li>
+          </ol>
+          <pre><code class="hljs language-python">import hashlib
+import requests
+
+api = "https://bin.blinkl.ink"
+
+# Retrieve a challenge to solve (expiry varies on many factors)
+challenge_response = requests.get(f"{api}/api/challenge").json()
+challenge, diff = challenge_response["challenge"], challenge_response["difficulty"]
+
+nonce = 0
+while True:
+    h = hashlib.sha256(f"{challenge}{nonce}".encode()).hexdigest()
+    if h.startswith("0" * diff):
+        break
+    nonce += 1
+
+# Make a POST request to create the paste
+r = requests.post(f"{api}/api/paste", json={
+    "paste": "hello from python",
+    "challenge": challenge,
+    "nonce": nonce,
+})
+</code></pre>
+        </div>
+
+        <div class="card">
+          <h3>Editing Pastes</h3>
+          <ol>
+            <li>Send a <code>PUT</code> request to <code>/api/paste/{paste_hash}</code> with your new text and edit token.</li>
+          </ol>
+          <pre><code class="hljs language-python">import requests
+
+api = "https://bin.blinkl.ink"
+
+# these would be saved from when you uploaded your paste
+paste_hash = "abc123XY"
+edit_token = "do-not-share-this"
+
+response = requests.put(f"{api}/api/paste/{paste_hash}", json={
+    "paste": "updated text",
+    "edit_token": edit_token,
+})
+</code></pre>
+        </div>
+
+        <div class="card">
+          <h3>Retrieving Pastes</h3>
+          <p>Pastes are retrieved using the short paste ID/paste hash. There are three endpoints for this:</p>
+          <ol>
+            <li>JSON: <code>GET /api/paste/{paste_hash}</code></li>
+            <li>Raw text: <code>GET /api/paste/{paste_hash}/raw</code></li>
+            <li>Rendered page (for sharing with people): <code>GET /{paste_hash}</code></li>
+          </ol>
+          <pre><code class="hljs language-python">import requests
+
+api = "https://bin.blinkl.ink"
+paste_hash = "abc123XY"
+
+json = requests.get(f"{api}/api/paste/{paste_hash}").json()
+raw = requests.get(f"{api}/api/paste/{paste_hash}/raw").text</code></pre>
+        </div>
+
+        <div class="card">
+          <h3>Deleting Pastes</h3>
+          <ol>
+            <li>Send a <code>DELETE</code> request to <code>/api/paste/{paste_hash}</code> with your edit token.</li>
+            <li>The server will delete the paste if the token matches.</li>
+          </ol>
+          <pre><code class="hljs language-python">import requests
+
+api = "https://bin.blinkl.ink"
+
+# these would be saved from when you uploaded your paste
+paste_hash = "abc123XY"
+edit_token = "do-not-share-this"
+
+response = requests.delete(f"{api}/api/paste/{paste_hash}", json={
+    "edit_token": edit_token,
+})</code></pre>
+        </div>
+      </div>
+    </main>
+    {{footer}}
+  </body>
+</html>

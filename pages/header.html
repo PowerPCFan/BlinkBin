@@ -1,0 +1,65 @@
+<header class="header">
+  <div class="header-wrap">
+    <a class="header-brand" href="/"><img src="/logo.png"> BlinkBin</a>
+    <nav class="header-nav">
+      <a href="/">Home</a>
+      <a href="/docs">Docs</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    background: var(--card);
+  }
+
+  .header-wrap {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .header-brand img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .header-nav, .header-brand {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
+  }
+
+  .header-brand {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: bold;
+    gap: 0.5rem;
+  }
+  .header-brand:hover {
+    text-decoration: none;
+    color: var(--text) !important;
+  }
+
+  .header-nav a {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .header-nav a:hover {
+    text-decoration: none;
+  }
+
+  .header-nav a:hover {
+    color: #0b6cf0;
+  }
+</style>

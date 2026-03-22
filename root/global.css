@@ -1,0 +1,203 @@
+:root {
+    --bg: #3c3836;
+    --card: #282828;
+    --text: #fbf1c7;
+    --muted: #d5c4a1;
+    --accent: #fe8019;
+
+    /* Gruvbox Theme */
+    --base00: #282828;
+    --base01: #3c3836;
+    --base02: #504945;
+    --base03: #665c54;
+    --base04: #bdae93;
+    --base05: #d5c4a1;
+    --base06: #ebdbb2;
+    --base07: #fbf1c7;
+    --base08: #fb4934;
+    --base09: #fe8019;
+    --base0A: #fabd2f;
+    --base0B: #b8bb26;
+    --base0C: #8ec07c;
+    --base0D: #83a598;
+    --base0E: #d3869b;
+    --base0F: #d65d0e;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    font-family: "Inter", system-ui;
+    color: var(--text);
+    background: var(--bg);
+}
+
+a {
+    color: var(--accent);
+    transition: color 0.2s ease;
+    text-decoration: none;
+}
+a:hover {
+    color: var(--base0A) !important;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+code {
+    background: var(--bg);
+    color: var(--accent);
+    border-radius: 0.25rem;
+    padding-block: 0.05rem;
+    padding-inline: 0.3rem;
+}
+
+button {
+    border: 0;
+    background-color: var(--accent);
+    color: var(--text);
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 550;
+    font-size: 1rem;
+    cursor: pointer;
+    width: min-content;
+    font-family: inherit;
+
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+button:hover {
+    background-color: var(--base0A);
+    color: var(--card);
+}
+
+
+
+/* highlight.js */
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5rem;
+}
+code.hljs {
+  padding: 3px 5px
+}
+pre code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5rem;
+}
+code.hljs {
+  padding: 3px 5px
+}
+.hljs {
+  color: var(--muted);
+  background: var(--bg);
+}
+
+.hljs::selection,
+.hljs ::selection {
+  background-color: var(--base02);
+  color: var(--base05);
+}
+
+.hljs-comment {
+  color: var(--base03);
+}
+
+.hljs-tag {
+  color: var(--base04);
+}
+
+.hljs-subst,
+.hljs-punctuation,
+.hljs-operator {
+  color: var(--base05)
+}
+.hljs-operator {
+  opacity: 0.7
+}
+
+.hljs-bullet,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-selector-tag,
+.hljs-name,
+.hljs-deletion {
+  color: var(--base08);
+}
+
+.hljs-symbol,
+.hljs-number,
+.hljs-link,
+.hljs-attr,
+.hljs-variable.constant_,
+.hljs-literal {
+  color: var(--base09)
+}
+
+.hljs-title,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: var(--base0A)
+}
+.hljs-strong {
+  font-weight: bold;
+  color: var(--base0A)
+}
+
+.hljs-code,
+.hljs-addition,
+.hljs-title.class_.inherited__,
+.hljs-string {
+  color: var(--base0B)
+}
+
+.hljs-built_in,
+.hljs-doctag,
+.hljs-quote,
+.hljs-keyword.hljs-atrule,
+.hljs-regexp {
+  color: var(--base0C)
+}
+
+.hljs-function .hljs-title,
+.hljs-attribute,
+.ruby .hljs-property,
+.hljs-title.function_,
+.hljs-section {
+  color: var(--base0D)
+}
+
+.hljs-type,
+.hljs-template-tag,
+.diff .hljs-meta,
+.hljs-keyword {
+  color: var(--base0E)
+}
+.hljs-emphasis {
+  color: var(--base0E);
+  font-style: italic
+}
+
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-meta .hljs-string {
+  color: var(--base0F)
+}
+
+.hljs-meta .hljs-keyword,
+.hljs-meta-keyword {
+  font-weight: bold
+}
