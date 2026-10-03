@@ -1,18 +1,27 @@
-import time
-import pytest
-import random
 import hashlib
+import random
+import time
+
+import pytest
 import requests
+
 from app.modules import webhooks
-from app.modules.database import SessionLocal, Paste
 from app.modules.data_structures import Challenge, PasteEvent, PasteViewStat
-from app.modules.rate_limit import EDIT_RATE_LIMIT_COUNT, FAILED_TOKEN_IP_RATE_LIMIT_COUNT, RATE_LIMIT_COUNT
+from app.modules.database import Paste, SessionLocal
 from app.modules.proof_of_work import (
-    BASE_DIFFICULTY, MAX_DIFFICULTY_INCREASE,
-    CHALLENGE_EXPIRY, get_expiry_for_difficulty
+    BASE_DIFFICULTY,
+    CHALLENGE_EXPIRY,
+    MAX_DIFFICULTY_INCREASE,
+    get_expiry_for_difficulty,
+)
+from app.modules.rate_limit import (
+    EDIT_RATE_LIMIT_COUNT,
+    FAILED_TOKEN_IP_RATE_LIMIT_COUNT,
+    RATE_LIMIT_COUNT,
 )
 
-BASE_URL = "http://127.0.0.1:8000"
+# BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "https://bin.blinkl.ink"
 API_BASE = f"{BASE_URL}/api"
 REQ_TIMEOUT = 15
 
@@ -527,7 +536,7 @@ def test_view_count_increments_for_different_ips():
 def test_replay_abuse_known_nonce_hash_spam():
     ip = _test_ip()
     challenge, difficulty, _ = get_challenge(ip)
-    nonce, solved_hash, _ = solve_puzzle(challenge, difficulty)
+    nonce = solve_puzzle(challenge, difficulty)[0]
 
     payload = {"paste": "first post", "challenge": challenge, "nonce": nonce}
     first = requests.post(f"{API_BASE}/paste", json=payload, headers=_headers_for_ip(ip), timeout=REQ_TIMEOUT)
